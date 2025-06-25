@@ -1,0 +1,30 @@
+{
+  "name": "employee-search-fastmcp-server",
+  "version": "1.0.0",
+  "description": "FastMCP Server for searching employee data from CSV",
+  "main": "build/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node build/index.js",
+    "dev": "npx fastmcp dev src/index.ts",
+    "inspect": "npx fastmcp inspect src/index.ts"
+  },
+  "dependencies": {
+    "fastmcp": "^3.5.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "keywords": [
+    "fastmcp",
+    "mcp",
+    "server",
+    "employee",
+    "csv"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}
