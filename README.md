@@ -6,7 +6,7 @@ TypeScriptとFastMCPを使った社員検索MCPサーバーです。同フォル
 
 - **FastMCP使用**: 従来のMCP SDKより簡潔で読みやすいコード
 - **Zodバリデーション**: 型安全なパラメータ検証
-- **3つの検索機能**: 名前検索、ID検索、全件取得
+- **4つの機能**: 名前検索、ID検索、全件取得、デバッグ
 
 ## セットアップ
 
@@ -36,7 +36,47 @@ employee-fastmcp-server/
 └── README.md
 ```
 
-### 4. CSVファイル形式
+### 4. CSVファイル配置
+
+CSVファイル`社員一覧.csv`は以下のいずれかの場所に配置してください：
+
+1. **プロジェクトルート**（推奨）
+```
+employee-fastmcp-server/
+├── 社員一覧.csv    ← ここ
+├── build/
+└── src/
+```
+
+2. **buildフォルダ内**
+```
+employee-fastmcp-server/
+├── build/
+│   ├── index.js
+│   └── 社員一覧.csv    ← ここ
+└── src/
+```
+
+サーバーは自動的に複数の場所を検索して、CSVファイルを見つけます。
+
+**環境変数で指定**:
+```bash
+export CSV_FILE_PATH="/absolute/path/to/社員一覧.csv"
+npm start
+```
+
+### トラブルシューティング
+
+CSVファイルが見つからない場合、サーバーは以下の順序で検索を行います：
+
+1. 環境変数 `CSV_FILE_PATH` で指定されたパス
+2. プロジェクトルート: `./社員一覧.csv`
+3. buildフォルダの親: `../社員一覧.csv`
+4. buildフォルダ内: `./社員一覧.csv`
+
+ログでどのパスが試行されたかを確認できます。
+
+### 5. CSVファイル形式
 ```csv
 社員番号,氏名,メールアドレス
 E001,田中太郎,tanaka.taro@company.com
@@ -77,6 +117,18 @@ npm run inspect
 - **説明**: 全社員一覧を取得
 - **パラメータ**: なし
 
+### 4. `debug_csv_path`
+- **説明**: CSVファイルの検索パスを確認（デバッグ用）
+- **パラメータ**: なし
+
+## デバッグ方法
+
+CSVファイルが見つからない場合：
+
+1. **`debug_csv_path`ツールを実行**してファイルの検索状況を確認
+2. ログを確認してどのパスが試行されたかをチェック
+3. 環境変数やファイル配置を調整
+
 ## FastMCPの利点
 
 従来のMCP SDKと比較して：
@@ -92,7 +144,7 @@ npm run inspect
 ```json
 {
   "mcpServers": {
-    "employee-search": {
+    "employee-search-server": {
       "command": "node",
       "args": ["/path/to/your/build/index.js"]
     }
