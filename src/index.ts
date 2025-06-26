@@ -15,28 +15,20 @@ interface Employee {
   email: string;
 }
 
-// CSVファイルパス（複数の候補を試行）
-const CSV_FILE_CANDIDATES = [
-  process.env.CSV_FILE_PATH,                                  // 環境変数で指定
-  path.join(process.cwd(), "社員一覧.csv"),                    // カレントディレクトリ
-  path.join(__dirname, "..", "社員一覧.csv"),                 // build の親ディレクトリ
-  path.join(__dirname, "社員一覧.csv"),                       // build ディレクトリ内
-].filter(Boolean) as string[]; // undefined を除去
+// CSVファイルパス（buildパスの親ディレクトリ）
+const CSV_FILE_CANDIDATES = path.join(__dirname, "..", "社員一覧.csv");
 
 /**
  * 存在するCSVファイルパスを取得
  */
 async function findCSVFile(): Promise<string> {
-  for (const candidate of CSV_FILE_CANDIDATES) {
-    try {
-      await fs.access(candidate);
-      //console.log(`CSVファイルを発見: ${candidate}`);
-      return candidate;
-    } catch {
-      // ファイルが存在しない場合は次の候補を試行
-    }
+  try {
+    await fs.access(CSV_FILE_CANDIDATES);
+    //console.log(`CSVファイルを発見: ${candidate}`);
+    return CSV_FILE_CANDIDATES;
+  } catch {
+    throw new Error(`CSVファイルが見つかりません。以下の場所を確認してください:\n${CSV_FILE_CANDIDATES}`);
   }
-  throw new Error(`CSVファイルが見つかりません。以下の場所を確認してください:\n${CSV_FILE_CANDIDATES.join('\n')}`);
 }
 
 /**
@@ -126,25 +118,6 @@ server.addTool({
       employees.map(emp => 
         `${emp.employeeId} | ${emp.name} | ${emp.email}`
       ).join("\n");
-  },
-});
-
-// デバッグ用：CSVファイル検索ツール
-server.addTool({
-  name: "debug_csv_path",
-  description: "CSVファイルの検索パスを確認します（デバッグ用）",
-  parameters: z.object({}),
-  execute: async () => {
-    const results = [];
-    for (const candidate of CSV_FILE_CANDIDATES) {
-      try {
-        await fs.access(candidate);
-        results.push(`✅ 見つかりました: ${candidate}`);
-      } catch {
-        results.push(`❌ 見つかりません: ${candidate}`);
-      }
-    }
-    return `CSVファイル検索結果:\n\n${results.join('\n')}`;
   },
 });
 
